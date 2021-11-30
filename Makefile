@@ -1,4 +1,4 @@
-EXECUTABLE ?= parqet_exporter
+EXECUTABLE ?= opsgenie
 IMAGE ?= quay.io/cbrgm/$(EXECUTABLE)
 GO := CGO_ENABLED=0 go
 DATE := $(shell date -u '+%FT%T%z')
