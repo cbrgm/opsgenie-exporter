@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: opsgenie-exporter
+  namespace: monitoring
+  labels:
+    app: opsgenie-exporter
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name: opsgenie-exporter
+      labels:
+        app: opsgenie-exporter
+    spec:
+      containers:
+        - name: opsgenie-exporter
+          image: quay.io/cbrgm/opsgenie-exporter
+          imagePullPolicy: Always
+          ports:
+            - name: internal
+              containerPort: 9212
+          args:
+            - --http.addr=0.0.0.0:9212
+            - --http.path=/metrics
+            - --log.level=info
+            - --opsgenie.apikey=<insert_me>
+          resources:
+            limits:
+              cpu: 250m
+              memory: 512Mi
+            requests:
+              cpu: 100m
+              memory: 256Mi
+      restartPolicy: Always
+  selector:
+    matchLabels:
+      app: opsgenie-exporter
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: opsgenie-exporter
+  namespace: monitoring
+  annotations:
+    prometheus.io/scrape: 'true'
+    prometheus.io/port: '9212'
+spec:
+  selector:
+    app: opsgenie-exporter
+  type: ClusterIP
+  ports:
+    - port: 9212
+      targetPort: 9212
