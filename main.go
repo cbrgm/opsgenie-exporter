@@ -35,9 +35,9 @@ const (
 	namespace = "opsgenie"
 
 	// subsystems
-	alertSubsystem = "alert"
-	teamSubsystem  = "team"
-	userSubsystem  = "user"
+	alertSubsystem = "alerts"
+	teamSubsystem  = "teams"
+	userSubsystem  = "users"
 
 	// labels
 	labelStatus   = "status"
@@ -89,17 +89,22 @@ func main() {
 		&opsgenieCollector{
 			client: opsgenieClient,
 			logger: logger,
-			OpsgenieAlertMetrics: prometheus.NewDesc(
-				prometheus.BuildFQName(namespace, alertSubsystem, "count"),
+			OpsgenieAlertMetricsCreatedTotal: prometheus.NewDesc(
+				prometheus.BuildFQName(namespace, alertSubsystem, "created_total"),
+				"opsgenie alert metrics",
+				nil, nil,
+			),
+			OpsgenieAlertMetricsCount: prometheus.NewDesc(
+				prometheus.BuildFQName(namespace, alertSubsystem, "status_count"),
 				"opsgenie alert metrics",
 				[]string{labelStatus}, nil,
 			),
-			OpsgenieTeamMetrics: prometheus.NewDesc(
+			OpsgenieTeamMetricsCount: prometheus.NewDesc(
 				prometheus.BuildFQName(namespace, teamSubsystem, "count"),
 				"opsgenie team metrics",
 				nil, nil,
 			),
-			OpsgenieUserMetrics: prometheus.NewDesc(
+			OpsgenieUserMetricsCount: prometheus.NewDesc(
 				prometheus.BuildFQName(namespace, userSubsystem, "count"),
 				"opsgenie user metrics",
 				[]string{labelUserRole}, nil,
@@ -133,15 +138,17 @@ type opsgenieCollector struct {
 	logger log.Logger
 
 	// metrics
-	OpsgenieAlertMetrics *prometheus.Desc
-	OpsgenieTeamMetrics  *prometheus.Desc
-	OpsgenieUserMetrics  *prometheus.Desc
+	OpsgenieAlertMetricsCreatedTotal *prometheus.Desc
+	OpsgenieAlertMetricsCount        *prometheus.Desc
+	OpsgenieTeamMetricsCount         *prometheus.Desc
+	OpsgenieUserMetricsCount         *prometheus.Desc
 }
 
 func (c *opsgenieCollector) Describe(descs chan<- *prometheus.Desc) {
-	descs <- c.OpsgenieAlertMetrics
-	descs <- c.OpsgenieTeamMetrics
-	descs <- c.OpsgenieUserMetrics
+	descs <- c.OpsgenieAlertMetricsCreatedTotal
+	descs <- c.OpsgenieAlertMetricsCount
+	descs <- c.OpsgenieTeamMetricsCount
+	descs <- c.OpsgenieUserMetricsCount
 }
 
 func (c *opsgenieCollector) Collect(metrics chan<- prometheus.Metric) {
@@ -152,26 +159,25 @@ func (c *opsgenieCollector) Collect(metrics chan<- prometheus.Metric) {
 }
 
 func (c *opsgenieCollector) collectOpsgenieAlertMetrics(metrics chan<- prometheus.Metric) {
-	c.processOpsgenieAlertsTotal(metrics)
-	c.processOpsgenieAlertsOpenTotal(metrics)
-	c.processOpsgenieAlertsClosedTotal(metrics)
+	c.processOpsgenieAlertsCreatedTotal(metrics)
+	c.processOpsgenieAlertsOpenCount(metrics)
+	c.processOpsgenieAlertsClosedCount(metrics)
 }
 
-func (c *opsgenieCollector) processOpsgenieAlertsTotal(metrics chan<- prometheus.Metric) {
+func (c *opsgenieCollector) processOpsgenieAlertsCreatedTotal(metrics chan<- prometheus.Metric) {
 	value, err := c.client.CountAlerts()
 	if err != nil {
 		level.Error(c.logger).Log("msg", "failed to query alerts from opsgenie", "err", err)
 		return
 	}
 	metrics <- prometheus.MustNewConstMetric(
-		c.OpsgenieAlertMetrics,
-		prometheus.GaugeValue,
+		c.OpsgenieAlertMetricsCreatedTotal,
+		prometheus.CounterValue,
 		value,
-		"",
 	)
 }
 
-func (c *opsgenieCollector) processOpsgenieAlertsOpenTotal(metrics chan<- prometheus.Metric) {
+func (c *opsgenieCollector) processOpsgenieAlertsOpenCount(metrics chan<- prometheus.Metric) {
 	value, err := c.client.CountOpenAlerts()
 	if err != nil {
 		level.Error(c.logger).Log("msg", "failed to query alerts from opsgenie", "err", err)
@@ -181,14 +187,14 @@ func (c *opsgenieCollector) processOpsgenieAlertsOpenTotal(metrics chan<- promet
 		alertOpenStatus,
 	}
 	metrics <- prometheus.MustNewConstMetric(
-		c.OpsgenieAlertMetrics,
+		c.OpsgenieAlertMetricsCount,
 		prometheus.GaugeValue,
 		value,
 		labels...,
 	)
 }
 
-func (c *opsgenieCollector) processOpsgenieAlertsClosedTotal(metrics chan<- prometheus.Metric) {
+func (c *opsgenieCollector) processOpsgenieAlertsClosedCount(metrics chan<- prometheus.Metric) {
 	value, err := c.client.CountClosedAlerts()
 	if err != nil {
 		level.Error(c.logger).Log("msg", "failed to query alerts from opsgenie", "err", err)
@@ -198,7 +204,7 @@ func (c *opsgenieCollector) processOpsgenieAlertsClosedTotal(metrics chan<- prom
 		alertClosedStatus,
 	}
 	metrics <- prometheus.MustNewConstMetric(
-		c.OpsgenieAlertMetrics,
+		c.OpsgenieAlertMetricsCount,
 		prometheus.GaugeValue,
 		value,
 		labels...,
@@ -206,27 +212,27 @@ func (c *opsgenieCollector) processOpsgenieAlertsClosedTotal(metrics chan<- prom
 }
 
 func (c *opsgenieCollector) collectOpsgenieTeamMetrics(metrics chan<- prometheus.Metric) {
-	c.processOpsgenieTeamsTotal(metrics)
+	c.processOpsgenieTeamsCount(metrics)
 }
 
-func (c *opsgenieCollector) processOpsgenieTeamsTotal(metrics chan<- prometheus.Metric) {
+func (c *opsgenieCollector) processOpsgenieTeamsCount(metrics chan<- prometheus.Metric) {
 	value, err := c.client.CountTeams()
 	if err != nil {
 		level.Error(c.logger).Log("msg", "failed to query teams from opsgenie", "err", err)
 		return
 	}
 	metrics <- prometheus.MustNewConstMetric(
-		c.OpsgenieTeamMetrics,
+		c.OpsgenieTeamMetricsCount,
 		prometheus.GaugeValue,
 		value,
 	)
 }
 
 func (c *opsgenieCollector) collectOpsgenieUserMetrics(metrics chan<- prometheus.Metric) {
-	c.processOpsgenieUsersTotal(metrics)
+	c.processOpsgenieUsersCount(metrics)
 }
 
-func (c *opsgenieCollector) processOpsgenieUsersTotal(metrics chan<- prometheus.Metric) {
+func (c *opsgenieCollector) processOpsgenieUsersCount(metrics chan<- prometheus.Metric) {
 	valuesMap, err := c.client.CountUsersByRole()
 	if err != nil {
 		level.Error(c.logger).Log("msg", "failed to query users from opsgenie", "err", err)
@@ -238,7 +244,7 @@ func (c *opsgenieCollector) processOpsgenieUsersTotal(metrics chan<- prometheus.
 			k,
 		}
 		metrics <- prometheus.MustNewConstMetric(
-			c.OpsgenieUserMetrics,
+			c.OpsgenieUserMetricsCount,
 			prometheus.GaugeValue,
 			v,
 			labels...,
