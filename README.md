@@ -43,7 +43,7 @@ Flags:
 |Name                                         |Type     |Cardinality   |Help
 |----                                         |----     |-----------   |----
 | opsgenie_alerts_created_total                 | counter   | 1            | Returns the total amount of alerts by status.
-| opsgenie_alert_status_count                 | gauge   | 1            | Returns the actual amount of alerts by status. Can be filtered by status `closed`, `open` or all
+| opsgenie_alerts_status_count                 | gauge   | 1            | Returns the actual amount of alerts by status. Can be filtered by status `closed`, `open` or all
 | opsgenie_teams_count                | gauge   | 1            | Returns the actual number of teams of your account
 | opsgenie_users_count                | gauge   | 1            | Returns the actual number of users. Can be filtered by `role`
 
