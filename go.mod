@@ -5,7 +5,7 @@ go 1.17
 require (
 	github.com/alecthomas/kong v0.5.0
 	github.com/go-kit/kit v0.12.0
-	github.com/opsgenie/opsgenie-go-sdk-v2 v1.2.12
+	github.com/opsgenie/opsgenie-go-sdk-v2 v1.2.13
 	github.com/prometheus/client_golang v1.12.1
 )
 
