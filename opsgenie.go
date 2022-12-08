@@ -3,8 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"strings"
-
 	"github.com/opsgenie/opsgenie-go-sdk-v2/alert"
 	"github.com/opsgenie/opsgenie-go-sdk-v2/client"
 	"github.com/opsgenie/opsgenie-go-sdk-v2/team"
@@ -21,8 +19,6 @@ const (
 	alertOpenStatus   = "open"
 	alertClosedStatus = "closed"
 )
-
-var priorities = []string{"P1", "P2", "P3", "P4", "P5"}
 
 func NewOpsgenieClient(apikey string) (*OpsgenieClient, error) {
 	alertClient, err := alert.NewClient(&client.Config{ApiKey: apikey})
@@ -47,57 +43,42 @@ func NewOpsgenieClient(apikey string) (*OpsgenieClient, error) {
 	}, nil
 }
 
-// countAlerts accepts a search query to limit the results returned.
-// See https://support.atlassian.com/opsgenie/docs/search-queries-for-alerts/
-func (c *OpsgenieClient) countAlerts(ctx context.Context, query string) (float64, error) {
-	res, err := c.alerts.CountAlerts(ctx, &alert.CountAlertsRequest{
-		Query: query,
+func (c *OpsgenieClient) CountAlerts() (float64, error) {
+	res, err := c.alerts.CountAlerts(context.Background(), &alert.CountAlertsRequest{
+		Query: "",
 	})
 	if err != nil {
 		return 0, err
 	}
-
 	return float64(res.Count), nil
 }
 
-type countAlertsParams struct {
-	Team     string
-	Status   string
-	Priority string
+func (c *OpsgenieClient) CountClosedAlerts() (float64, error) {
+	res, err := c.alerts.CountAlerts(context.Background(), &alert.CountAlertsRequest{
+		Query: fmt.Sprintf("status: %s", alertClosedStatus),
+	})
+	if err != nil {
+		return 0, err
+	}
+	return float64(res.Count), nil
 }
 
-func (p *countAlertsParams) ToQuery() string {
-	var filters []string
-	if p.Team != "" {
-		filters = append(filters, fmt.Sprintf("teams: %s", p.Team))
+func (c *OpsgenieClient) CountOpenAlerts() (float64, error) {
+	res, err := c.alerts.CountAlerts(context.Background(), &alert.CountAlertsRequest{
+		Query: fmt.Sprintf("status: %s", alertOpenStatus),
+	})
+	if err != nil {
+		return 0, err
 	}
-	if p.Status != "" {
-		filters = append(filters, fmt.Sprintf("status: %s", p.Team))
-	}
-	if p.Priority != "" {
-		filters = append(filters, fmt.Sprintf("priority: %s", p.Priority))
-	}
-
-	if len(filters) > 0 {
-		return strings.Join(filters, " AND ")
-	}
-	return ""
+	return float64(res.Count), nil
 }
 
-func (c *OpsgenieClient) CountAlerts() (float64, error) {
-	return c.countAlerts(context.Background(), "")
-}
-
-func (c *OpsgenieClient) CountAlertsBy(params countAlertsParams) (float64, error) {
-	return c.countAlerts(context.Background(), params.ToQuery())
-}
-
-func (c *OpsgenieClient) ListTeams() ([]team.ListedTeams, error) {
+func (c *OpsgenieClient) CountTeams() (float64, error) {
 	res, err := c.teams.List(context.Background(), &team.ListTeamRequest{})
 	if err != nil {
-		return nil, err
+		return 0, err
 	}
-	return res.Teams, nil
+	return float64(len(res.Teams)), nil
 }
 
 func (c *OpsgenieClient) CountUsersByRole() (map[string]float64, error) {
