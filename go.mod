@@ -6,7 +6,7 @@ require (
 	github.com/alecthomas/kong v0.7.1
 	github.com/go-kit/kit v0.12.0
 	github.com/opsgenie/opsgenie-go-sdk-v2 v1.2.14
-	github.com/prometheus/client_golang v1.15.0
+	github.com/prometheus/client_golang v1.16.0
 )
 
 require (
@@ -21,8 +21,8 @@ require (
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/prometheus/client_model v0.3.0 // indirect
 	github.com/prometheus/common v0.42.0 // indirect
-	github.com/prometheus/procfs v0.9.0 // indirect
+	github.com/prometheus/procfs v0.10.1 // indirect
 	github.com/sirupsen/logrus v1.8.1 // indirect
-	golang.org/x/sys v0.6.0 // indirect
+	golang.org/x/sys v0.8.0 // indirect
 	google.golang.org/protobuf v1.30.0 // indirect
 )
