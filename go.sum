@@ -31,8 +31,8 @@ github.com/hexops/gotextdiff v1.0.3 h1:gitA9+qJrrTCsiCl7+kh75nPqQt1cx4ZkudSTLoUq
 github.com/konsorten/go-windows-terminal-sequences v1.0.1/go.mod h1:T0+1ngSBFLxvqU3pZ+m/2kptfBszLMUkC4ZK/EgS/cQ=
 github.com/matttproud/golang_protobuf_extensions v1.0.4 h1:mmDVorXM7PCGKw94cs5zkfA9PSy5pEvNWRP0ET0TIVo=
 github.com/matttproud/golang_protobuf_extensions v1.0.4/go.mod h1:BSXmuO+STAnVfrANrmjBb36TMTDstsz7MSK+HVaYKv4=
-github.com/opsgenie/opsgenie-go-sdk-v2 v1.2.14 h1:ni+M5q9QIZQq5xQiYzbttDZpPQogPWx8MdHpvZtWcTE=
-github.com/opsgenie/opsgenie-go-sdk-v2 v1.2.14/go.mod h1:4OjcxgwdXzezqytxN534MooNmrxRD50geWZxTD7845s=
+github.com/opsgenie/opsgenie-go-sdk-v2 v1.2.20 h1:twA4Kiaw+Vi4x5Ei3qDO1TtQf7oSuJQ+CqJB9j9lEmQ=
+github.com/opsgenie/opsgenie-go-sdk-v2 v1.2.20/go.mod h1:4OjcxgwdXzezqytxN534MooNmrxRD50geWZxTD7845s=
 github.com/pkg/errors v0.8.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
 github.com/pkg/errors v0.9.1 h1:FEBLx1zS214owpjy7qsBeixbURkuhQAwrK5UwLGTwt4=
 github.com/pkg/errors v0.9.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
